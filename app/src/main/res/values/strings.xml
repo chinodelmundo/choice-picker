@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Choice Picker</string>
+
+    <string name="new_question">New question</string>
+    <string name="questions_list_title">Available Questions</string>
+
+    <string name="delete">delete</string>
+
+    <string name="question_hint">Question</string>
+    <string name="question_empty">Question field cannot be empty.</string>
+    <string name="add_to_choices">New Choice</string>
+    <string name="choices_empty">Enter some choices.</string>
+    <string name="button_add">Add</string>
+    <string name="button_choose">Choose</string>
+
+    <string name="back">Back</string>
+    <string name="again">Again</string>
+    <string name="new_text">New</string>
+</resources>
