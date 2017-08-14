@@ -22,7 +22,7 @@ public class QuestionCustomAdapter extends ArrayAdapter<QuestionDataModel> imple
     // View lookup cache
     private static class ViewHolder {
         TextView txtName;
-        ImageView imgDelete, imgStart;
+        ImageView imgDelete, imgEdit;
     }
 
     public QuestionCustomAdapter(ArrayList<QuestionDataModel> data, Context context) {
@@ -45,9 +45,9 @@ public class QuestionCustomAdapter extends ArrayAdapter<QuestionDataModel> imple
                     ((MainActivity)mContext).deleteQuestion(dataModel.getId(), dataModel.getText());
                 }
                 break;
-            case R.id.ivStart:
+            case R.id.ivEdit:
                 if(mContext instanceof MainActivity){
-                    ((MainActivity)mContext).chooseItem(dataModel.getId());
+                    ((MainActivity)mContext).editItem(dataModel.getId());
                 }
                 break;
         }
@@ -69,7 +69,7 @@ public class QuestionCustomAdapter extends ArrayAdapter<QuestionDataModel> imple
             convertView = inflater.inflate(R.layout.questions_row_item, parent, false);
             viewHolder.txtName = (TextView) convertView.findViewById(R.id.tvQuestion);
             viewHolder.imgDelete = (ImageView) convertView.findViewById(R.id.ivDelete);
-            viewHolder.imgStart = (ImageView) convertView.findViewById(R.id.ivStart);
+            viewHolder.imgEdit = (ImageView) convertView.findViewById(R.id.ivEdit);
 
             convertView.setTag(viewHolder);
         } else {
@@ -79,8 +79,8 @@ public class QuestionCustomAdapter extends ArrayAdapter<QuestionDataModel> imple
         viewHolder.txtName.setText(dataModel.getText());
         viewHolder.imgDelete.setOnClickListener(this);
         viewHolder.imgDelete.setTag(position);
-        viewHolder.imgStart.setOnClickListener(this);
-        viewHolder.imgStart.setTag(position);
+        viewHolder.imgEdit.setOnClickListener(this);
+        viewHolder.imgEdit.setTag(position);
 
         // Return the completed view to render on screen
         return convertView;

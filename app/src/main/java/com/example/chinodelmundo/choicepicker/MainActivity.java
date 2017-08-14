@@ -4,10 +4,17 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,10 +22,13 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     public static final String QUESTION_ID = "com.example.chinodelmundo.choicepicker.QUESTION_ID";
     ListView listView;
     ArrayList<QuestionDataModel> dataModels;
@@ -28,18 +38,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(myToolbar);
+        listView = (ListView)findViewById(R.id.lvQuestions);
+        retrieveQuestions();
+    }
 
-        getQuestionsList();
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected void searchAction(String searchString) {
+        retrieveQuestions(searchString);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        getQuestionsList();
+        retrieveQuestions();
     }
 
     @Override
@@ -48,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void getQuestionsList(){
+    public void retrieveQuestions(String searchString){
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         String[] projection = {
@@ -56,15 +73,22 @@ public class MainActivity extends AppCompatActivity {
                 FeedReaderContract.FeedEntry.QUESTIONS_COLUMN_NAME_TEXT
         };
 
+        String selection = null;
+        String[] selectionArgs = null;
+
+        if(!searchString.isEmpty()){
+            selection = FeedReaderContract.FeedEntry.QUESTIONS_COLUMN_NAME_TEXT + " LIKE ?";
+            selectionArgs = new String[]{ "%" + searchString + "%" };
+        }
+
         Cursor cursor = db.query(
                 FeedReaderContract.FeedEntry.QUESTIONS_TABLE_NAME,
                 projection,
+                selection,
+                selectionArgs,
                 null,
                 null,
-                null,
-                null,
-                null
-        );
+                null);
 
         dataModels = new ArrayList<>();
         while(cursor.moveToNext()) {
@@ -75,16 +99,22 @@ public class MainActivity extends AppCompatActivity {
             dataModels.add(new QuestionDataModel(itemId, itemText));
         }
         cursor.close();
+        updateListView();
+    }
 
+    public void retrieveQuestions() {
+        retrieveQuestions("");
+    }
+
+    public void updateListView() {
         adapter = new QuestionCustomAdapter(dataModels, MainActivity.this);
-        listView = (ListView)findViewById(R.id.lvQuestions);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
                 long questionID = dataModels.get(position).getId();
 
-                Intent intent = new Intent(MainActivity.this, QuestionDetailsActivity.class);
+                Intent intent = new Intent(MainActivity.this, ChooseActivity.class);
                 intent.putExtra(QUESTION_ID, questionID);
                 startActivity(intent);
             }
@@ -114,11 +144,11 @@ public class MainActivity extends AppCompatActivity {
         db.delete(FeedReaderContract.FeedEntry.CHOICES_TABLE_NAME, selectionChoices, selectionArgsChoices);
 
         Snackbar.make(findViewById(R.id.mainCoordinatorLayout), "Deleted: " + text, Snackbar.LENGTH_SHORT).show();
-        getQuestionsList();
+        retrieveQuestions();
     }
 
-    public void chooseItem(long id){
-        Intent intent = new Intent(this, ChooseActivity.class);
+    public void editItem(long id){
+        Intent intent = new Intent(this, QuestionDetailsActivity.class);
         intent.putExtra(QUESTION_ID, id);
         startActivity(intent);
     }

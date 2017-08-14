@@ -44,27 +44,41 @@
         android:layout_alignParentBottom="true"
         android:paddingBottom="16dp">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/buttonMiddle"
-            android:text="@string/back"
-            android:onClick="onClickPreviousActivity"/>
-
-        <Button
+        <ImageView
             android:id="@+id/buttonMiddle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="@string/again"
-            android:onClick="onClickAgain"/>
+            android:contentDescription="@string/again"
+            android:src="@drawable/ic_refresh"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:onClick="onClickAgain"
+            android:background="@drawable/border" />
 
-        <Button
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/buttonMiddle"
+            android:layout_toStartOf="@id/buttonMiddle"
+            android:contentDescription="@string/back"
+            android:src="@drawable/ic_back"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:onClick="onClickPreviousActivity"
+            android:background="@drawable/border" />
+
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/buttonMiddle"
-            android:text="@string/new_text"
-            android:onClick="onClickNewQuestion"/>
+            android:layout_toEndOf="@+id/buttonMiddle"
+            android:contentDescription="@string/new_text"
+            android:src="@drawable/ic_new"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:onClick="onClickNewQuestion"
+            android:background="@drawable/border" />
 
     </RelativeLayout>
 </RelativeLayout>

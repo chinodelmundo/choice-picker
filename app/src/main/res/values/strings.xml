@@ -1,10 +1,16 @@
 <resources>
+    <string name="toolbar_search">Search</string>
+    <string name="toolbar_screenshot">Screenshot</string>
+    <string name="toolbar_settings">Settings</string>
+
     <string name="app_name">Choice Picker</string>
 
     <string name="new_question">New question</string>
-    <string name="questions_list_title">Available Questions</string>
+    <string name="questions_list_title">Questions Available</string>
+    <string name="choices_list_title">Choices Available</string>
 
     <string name="delete">delete</string>
+    <string name="edit">edit</string>
 
     <string name="question_hint">Question</string>
     <string name="question_empty">Question field cannot be empty.</string>

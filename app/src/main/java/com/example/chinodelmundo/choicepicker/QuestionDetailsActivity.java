@@ -7,9 +7,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -22,10 +26,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuestionDetailsActivity extends AppCompatActivity {
+public class QuestionDetailsActivity extends BaseActivity {
     public static final String QUESTION_ID = "com.example.chinodelmundo.choicepicker.QUESTION_ID";
     long questionId;
     ListView listView;
+    EditText questionEditText;
     ArrayList<ChoiceDataModel> dataModels;
     private static ChoiceCustomAdapter adapter;
     FeedReaderContract.FeedReaderDbHelper mDbHelper = new FeedReaderContract.FeedReaderDbHelper(QuestionDetailsActivity.this);
@@ -33,10 +38,6 @@ public class QuestionDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_question_details);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         if(getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -47,14 +48,30 @@ public class QuestionDetailsActivity extends AppCompatActivity {
 
         if(questionId != 0){
             getQuestion();
-            getChoices();
+            retrieveChoices();
         }
+    }
+
+    @Override
+    public int getLayoutResource() {
+        return R.layout.activity_question_details;
+    }
+
+    @Override
+    protected void searchAction(String searchString) {
+        retrieveChoices(searchString);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         getQuestion();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        updateQuestionText();
     }
 
     @Override
@@ -91,19 +108,27 @@ public class QuestionDetailsActivity extends AppCompatActivity {
         }
         cursor.close();
 
-        EditText questionEditText = (EditText) findViewById(R.id.etQuestion);
+        questionEditText = (EditText) findViewById(R.id.etQuestion);
         questionEditText.setText(questionText);
     }
 
-    public void getChoices(){
+    public void retrieveChoices(String searchString){
+        String selection;
+        String[] selectionArgs;
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         String[] projection = {
                 FeedReaderContract.FeedEntry._ID,
                 FeedReaderContract.FeedEntry.CHOICES_COLUMN_NAME_TEXT
         };
-        String selection = FeedReaderContract.FeedEntry.CHOICES_COLUMN_NAME_QUESTION_ID + " = ?";
-        String[] selectionArgs = { Long.toString(questionId) };
+
+        if(searchString.isEmpty()){
+            selection = FeedReaderContract.FeedEntry.CHOICES_COLUMN_NAME_QUESTION_ID + " = ?";
+            selectionArgs = new String[]{ Long.toString(questionId) };
+        }else{
+            selection = FeedReaderContract.FeedEntry.CHOICES_COLUMN_NAME_QUESTION_ID + " = ? AND " + FeedReaderContract.FeedEntry.CHOICES_COLUMN_NAME_TEXT + " LIKE ?";
+            selectionArgs = new String[]{ Long.toString(questionId) , "%" + searchString + "%"};
+        }
 
         Cursor cursor = db.query(
                 FeedReaderContract.FeedEntry.CHOICES_TABLE_NAME,
@@ -124,7 +149,14 @@ public class QuestionDetailsActivity extends AppCompatActivity {
             dataModels.add(new ChoiceDataModel(itemId, questionId, itemText));
         }
         cursor.close();
+        updateListView();
+    }
 
+    public void retrieveChoices(){
+        retrieveChoices("");
+    }
+
+    public void updateListView() {
         adapter = new ChoiceCustomAdapter(dataModels, QuestionDetailsActivity.this);
         listView = (ListView)findViewById(R.id.lvChoices);
         listView.setAdapter(adapter);
@@ -147,7 +179,7 @@ public class QuestionDetailsActivity extends AppCompatActivity {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
 
-        getChoices();
+        retrieveChoices();
     }
 
     public void deleteChoice(long id, String text){
@@ -157,7 +189,7 @@ public class QuestionDetailsActivity extends AppCompatActivity {
         db.delete(FeedReaderContract.FeedEntry.CHOICES_TABLE_NAME, selection, selectionArgs);
 
         Snackbar.make(findViewById(R.id.mainCoordinatorLayout), "Deleted: " + text, Snackbar.LENGTH_SHORT).show();
-        getChoices();
+        retrieveChoices();
     }
 
     public void chooseItem(View view){

@@ -12,18 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="?attr/colorPrimary"
-            android:elevation="4dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            tools:layout_constraintRight_creator="1"
-            tools:layout_constraintLeft_creator="1" />
+        <include layout="@layout/toolbar"/>
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="fill_parent"
@@ -45,8 +34,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginStart="16dp"
-                android:textColorHint="@color/hintColor">
+                android:layout_marginStart="16dp">
 
                 <EditText
                     android:id="@+id/etQuestion"
@@ -83,8 +71,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginStart="16dp"
-                android:textColorHint="@color/hintColor">
+                android:layout_marginStart="16dp">
 
                 <EditText
                     android:id="@+id/etNewChoice"
@@ -109,13 +96,28 @@
                 android:background="@color/buttoncolor"
                 android:textColor="@color/textColor" />
 
+            <TextView
+                android:id="@+id/tvChoicesTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/btnChoose"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="@string/choices_list_title" />
+
             <ListView
                 android:layout_marginBottom="?attr/actionBarSize"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 android:id="@+id/lvChoices"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/btnChoose"
+                android:layout_below="@+id/tvChoicesTitle"
                 android:layout_marginTop="8dp"
                 android:dividerHeight="1dp" />
 
